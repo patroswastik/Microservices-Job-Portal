@@ -5,11 +5,11 @@ import com.project.jobms.job.JobRepository;
 import com.project.jobms.job.JobService;
 import com.project.jobms.job.dto.JobWithCompanyDTO;
 import com.project.jobms.job.external.Company;
+import com.project.jobms.job.mapper.JobMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,11 +26,8 @@ public class JobServiceImpl implements JobService {
     }
 
     private JobWithCompanyDTO convertToDto(Job job){
-        JobWithCompanyDTO dto = new JobWithCompanyDTO();
         Company company = restTemplate.getForObject("http://COMPANYMS:8081/companies/"+job.getCompanyId(), Company.class);
-        dto.setJob(job);
-        dto.setCompany(company);
-        return dto;
+        return JobMapper.mapToCompanyDTO(job, company);
     }
 
     @Override
