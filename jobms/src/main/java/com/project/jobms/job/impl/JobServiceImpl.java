@@ -3,10 +3,14 @@ package com.project.jobms.job.impl;
 import com.project.jobms.job.Job;
 import com.project.jobms.job.JobRepository;
 import com.project.jobms.job.JobService;
-import com.project.jobms.job.dto.JobWithCompanyDTO;
+import com.project.jobms.job.dto.JobDTO;
 import com.project.jobms.job.external.Company;
+import com.project.jobms.job.external.Review;
 import com.project.jobms.job.mapper.JobMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,21 +29,29 @@ public class JobServiceImpl implements JobService {
         this.jobRepository = jobRepository;
     }
 
-    private JobWithCompanyDTO convertToDto(Job job){
+    private JobDTO convertToDto(Job job){
         Company company = restTemplate.getForObject("http://COMPANYMS:8081/companies/"+job.getCompanyId(), Company.class);
-        return JobMapper.mapToCompanyDTO(job, company);
+
+        ResponseEntity<List<Review>> reviewResponse = restTemplate.exchange(
+                "http://REVIEWMS:8083/reviews?companyId="+job.getCompanyId(),
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Review>>() {}
+        );
+
+        return JobMapper.mapToCompanyDTO(job, company, reviewResponse.getBody());
     }
 
     @Override
-    public List<JobWithCompanyDTO> findAll() {
+    public List<JobDTO> findAll() {
         List<Job> jobs = jobRepository.findAll();
         return jobs.stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
     @Override
-    public JobWithCompanyDTO getJobById(Long id) {
+    public JobDTO getJobById(Long id) {
         Job job = jobRepository.findById(id).orElse(null);
-        JobWithCompanyDTO dto = convertToDto(job);
+        JobDTO dto = convertToDto(job);
         return dto;
     }
 
