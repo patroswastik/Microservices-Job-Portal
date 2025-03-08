@@ -1,26 +1,11 @@
-package com.project.reviewms.review;
+package com.project.companyms.company.dto;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "review_table")
-public class Review {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ReviewMessage {
     private Long id;
     private String title;
     private String description;
     private double rating;
     private Long companyId;
-
-    public Review() {}
-
-    public Review(Long id, String title, String description, double rating) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.rating = rating;
-    }
 
     public Long getId() {
         return id;

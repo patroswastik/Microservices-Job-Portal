@@ -6,12 +6,14 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
+@Table(name = "company_table")
 public class Company {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String description;
+    private Double rating;
 
     public Company() {}
 
@@ -45,4 +47,11 @@ public class Company {
         this.description = description;
     }
 
+    public Double getRating() {
+        return rating;
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
+    }
 }
